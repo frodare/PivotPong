@@ -1,73 +1,107 @@
-﻿using Microsoft.Xna.Framework;
+﻿#define DEBUG
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Nez;
+using Nez.Sprites;
+using PivotPong.Desktop.Components;
+
+// sprites from https://ccrgeek.wordpress.com/rpg-maker-ace/graphics/character-sprites/
+
 
 namespace PivotPong.Desktop {
-  /// <summary>
-  /// This is the main type for your game.
-  /// </summary>
-  public class Game1 : Game {
-    GraphicsDeviceManager graphics;
+
+
+
+	public class Game1 : Core {
+    // GraphicsDeviceManager graphics;
     SpriteBatch spriteBatch;
 
-    public Game1() {
-      graphics = new GraphicsDeviceManager(this);
-      Content.RootDirectory = "Content";
+		public Game1() : base() {
+     
     }
 
-    /// <summary>
-    /// Allows the game to perform any initialization it needs to before starting to run.
-    /// This is where it can query for any required services and load any non-graphic
-    /// related content.  Calling base.Initialize will enumerate through any components
-    /// and initialize them as well.
-    /// </summary>
     protected override void Initialize() {
-      // TODO: Add your initialization logic here
-
       base.Initialize();
+			base.Initialize();
+      Window.AllowUserResizing = true;   
+
+			Core.debugRenderEnabled = true;
+
+			scene = SetupMainScene();
     }
 
-    /// <summary>
-    /// LoadContent will be called once per game and is the place to load
-    /// all of your content.
-    /// </summary>
+		private Scene SetupMainScene() {
+			var scene = Scene.createWithDefaultRenderer(Color.Black);
+			CreateBall(scene);
+			CreatePaddle(scene, 0);
+			CreatePaddle(scene, 1);
+			return scene;
+		}
+
+		private void CreatePaddle(Scene scene, int player) {
+      var e = scene.createEntity("paddle" + player);
+			Texture2D texture = scene.content.Load<Texture2D>("paddle");
+			e.addComponent(new Sprite(texture));
+
+			BoxCollider boxCollider = new BoxCollider();
+			e.addComponent(boxCollider);
+      /*
+      ArcadeRigidbody arcadeRigidbody = new ArcadeRigidbody();
+      arcadeRigidbody.shouldUseGravity = false;
+      e.addComponent(arcadeRigidbody);
+			arcadeRigidbody.elasticity = 0;
+			*/
+
+			e.addComponent(new PaddleMover(player));
+      
+			e.transform.position = new Vector2(500f, 600f - (player * 300));
+    }
+
+		  
+		private void CreateBall(Scene scene) {
+			var e = scene.createEntity("ball");
+			e.addComponent(new Sprite(BallTexture(scene)));
+			e.addComponent<CircleCollider>();
+         
+			BallBody body = new BallBody();
+			body.velocity = new Vector2(20f, 150f);
+			e.addComponent(body);
+
+
+			e.addComponent(new CircularBounds(new Vector2(500, 500), 400));
+
+			e.transform.position = new Vector2(500f, 500f);
+		}
+
+		private Texture2D BallTexture(Scene scene) {
+			Texture2D originalTexture = scene.content.Load<Texture2D>("balls");
+      var sourceRectangle = new Rectangle(0, 0, 32, 32);
+      var texture = new Texture2D(GraphicsDevice, sourceRectangle.Width, sourceRectangle.Height);
+      Color[] data = new Color[sourceRectangle.Width * sourceRectangle.Height];
+      originalTexture.GetData(0, sourceRectangle, data, 0, data.Length);
+      texture.SetData(data);
+      return texture;
+    }
+
+
     protected override void LoadContent() {
-      // Create a new SpriteBatch, which can be used to draw textures.
       spriteBatch = new SpriteBatch(GraphicsDevice);
-
-      // TODO: use this.Content to load your game content here
     }
 
-    /// <summary>
-    /// UnloadContent will be called once per game and is the place to unload
-    /// game-specific content.
-    /// </summary>
     protected override void UnloadContent() {
-      // TODO: Unload any non ContentManager content here
     }
 
-    /// <summary>
-    /// Allows the game to run logic such as updating the world,
-    /// checking for collisions, gathering input, and playing audio.
-    /// </summary>
-    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     protected override void Update(GameTime gameTime) {
       if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
         Exit();
 
-      // TODO: Add your update logic here
 
       base.Update(gameTime);
     }
 
-    /// <summary>
-    /// This is called when the game should draw itself.
-    /// </summary>
-    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     protected override void Draw(GameTime gameTime) {
       GraphicsDevice.Clear(Color.CornflowerBlue);
-
-      // TODO: Add your drawing code here
 
       base.Draw(gameTime);
     }

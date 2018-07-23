@@ -48,6 +48,13 @@
     <Compile Include="Components\PaddleMover.cs" />
     <Compile Include="Components\BallBody.cs" />
     <Compile Include="Components\CircularBounds.cs" />
+    <Compile Include="Scenes\GameScene.cs" />
+    <Compile Include="Entities\Ball.cs" />
+    <Compile Include="Entities\Paddle.cs" />
+    <Compile Include="Components\SpinWithLevel.cs" />
+    <Compile Include="Components\SpinBody.cs" />
+    <Compile Include="Components\Utils\PolarVector.cs" />
+    <Compile Include="Components\FaceOrigin.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -116,6 +123,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\" />
+    <Folder Include="Scenes\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Components\Utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

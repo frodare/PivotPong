@@ -2,40 +2,41 @@
 using Microsoft.Xna.Framework;
 using Nez;
 
-namespace PivotPong.Desktop.Components {
-	
-	public class CircularBounds : Component, IUpdatable {
+namespace PivotPong.Desktop.Components
+{
 
-		private Vector2 position;
-		private float radiusSq;
+    public class CircularBounds : Component, IUpdatable
+    {
 
-		public CircularBounds(Vector2 position, float radius) {
-			this.position = position;
-			this.radiusSq = radius * radius;
-		}
-    
-		void IUpdatable.update() {
+        private Vector2 position;
+        private float radiusSq;
 
-			Vector2 toCenter = position - entity.position;
-			float distanceFromCenterSq = toCenter.LengthSquared();
+        public CircularBounds(Vector2 position, float radius)
+        {
+            this.position = position;
+            this.radiusSq = radius * radius;
+        }
+
+        void IUpdatable.update()
+        {
+
+            Vector2 toCenter = position - entity.position;
+            float distanceFromCenterSq = toCenter.LengthSquared();
 
 
-			if (distanceFromCenterSq > radiusSq) {
+            if (distanceFromCenterSq > radiusSq)
+            {
 
-				System.Console.WriteLine("hit wall");
+                BallBody body = entity.getComponent<BallBody>();
+                float speed = body.velocity.Length();
+                toCenter.Normalize();
 
-        // TODO move out off wall
+                body.velocity = toCenter * speed;
 
-				BallBody body = entity.getComponent<BallBody>();
-				float speed = body.velocity.Length();
-				toCenter.Normalize();
+            }
 
-				body.velocity = toCenter * speed;
-    
-			}
-      
+        }
+
+
     }
-
-
-  }
 }
